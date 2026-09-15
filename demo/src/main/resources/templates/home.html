@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -121,9 +121,6 @@
         .exam-page .logo::before { display: grid; width: 30px; height: 30px; place-items: center; color: #152b45; background: #d5e971; content: "E"; font: 700 0.9rem Arial, sans-serif; }
         .exam-page nav { color: #152b45; }
         .exam-page nav a:hover, .exam-page .header-actions a:hover { color: #e7765e; }
-        .exam-page .header-login { padding: 10px 15px; color: #152b45; background: #d5e971; border-radius: 99px; }
-        .exam-page .header-login:hover { color: #152b45 !important; background: #c6dc53; }
-        .exam-page .user-name { color: #152b45; font: 700 0.76rem Arial, sans-serif; }
         .exam-page .bag { border-color: #152b45; }
         .exam-page main { max-width: 1240px; padding: 16px 30px 72px; }
         .exam-hero { display: grid; grid-template-columns: 1fr 0.9fr; min-height: 420px; overflow: hidden; background: #e8f2f5; }
@@ -180,19 +177,19 @@
 <body class="exam-page">
     <div class="announcement">Your next milestone is closer than you think</div>
     <header>
-        <a class="logo" href="/">Examora</a>
+        <a class="logo" href="/">Exam Portal</a>
         <nav aria-label="Primary navigation">
             <a href="#exams">My exams</a>
             <a href="#subjects">Subjects</a>
             <a href="#progress">Progress</a>
         </nav>
-            <div class="header-actions"><a href="#help">Help</a><a class="header-login" th:if="${username == null}" href="/login">Login</a><span class="user-name" th:if="${username != null}" th:text="${username}"></span><a th:if="${username != null}" href="/logout">Log out</a></div>
+        <div class="header-actions"><a href="#help">Help</a>
     </header>
 
     <main>
         <section class="exam-hero" aria-labelledby="exam-hero-title">
             <div class="exam-hero-copy">
-                <p class="exam-eyebrow" th:text="${username != null ? 'Good morning, ' + username : 'Welcome to Examora'}">Welcome to Examora</p>
+                <p class="exam-eyebrow">Good morning, Alex</p>
                 <h1 id="exam-hero-title">Ready to test what you know?</h1>
                 <p>Pick up where you left off, practice a new topic, or take your next timed assessment.</p>
                 <div class="exam-actions"><a class="exam-button" href="#exams">View my exams</a><a class="exam-link" href="#subjects">Explore subjects</a></div>
@@ -205,7 +202,9 @@
             <div class="exam-dashboard">
                 <div class="exam-panel">
                     <div class="exam-panel-heading"><h3>Upcoming assessments</h3><a href="#exams">See calendar</a></div>
-                    <article class="exam-item" th:each="exam : ${exams}"><span class="subject-icon" th:text="${exam.code}">MATH</span><div><h4 th:text="${exam.title}">Algebra fundamentals</h4><p><span th:text="${exam.questionCount}">20 questions</span> &middot; <span th:text="${exam.duration}">30 minutes</span></p></div><a class="start-button" th:href="@{/exam/{id}(id=${exam.id})}">Start exam</a></article>
+                    <article class="exam-item"><span class="subject-icon">MATH</span><div><h4>Algebra fundamentals</h4><p>20 questions &middot; 30 minutes &middot; Due tomorrow</p></div><a class="start-button" href="#start">Start exam</a></article>
+                    <article class="exam-item"><span class="subject-icon">BIO</span><div><h4>Cell biology checkpoint</h4><p>15 questions &middot; 20 minutes &middot; Due Friday</p></div><a class="start-button" href="#start">Start exam</a></article>
+                    <article class="exam-item"><span class="subject-icon">ENG</span><div><h4>Reading comprehension</h4><p>25 questions &middot; 35 minutes &middot; Due next week</p></div><a class="start-button" href="#start">Start exam</a></article>
                 </div>
                 <aside class="exam-panel" id="progress">
                     <div class="exam-panel-heading"><h3>Overall progress</h3><a href="#progress">Details</a></div>
@@ -222,7 +221,10 @@
         <section id="subjects" aria-labelledby="subject-title">
             <div class="exam-row"><h2 id="subject-title">Practice by subject</h2><p>Find your next challenge</p></div>
             <div class="subject-grid">
-                <a class="subject-card" th:each="exam : ${exams}" th:href="@{/exam/{id}(id=${exam.id})}"><h3 th:text="${exam.title}">Mathematics</h3><span th:text="${exam.questionCount}">12 tests</span></a>
+                <a class="subject-card" href="#math"><h3>Mathematics</h3><span>12 tests</span></a>
+                <a class="subject-card" href="#science"><h3>Science</h3><span>9 tests</span></a>
+                <a class="subject-card" href="#english"><h3>English</h3><span>14 tests</span></a>
+                <a class="subject-card" href="#history"><h3>History</h3><span>7 tests</span></a>
             </div>
         </section>
     </main>
