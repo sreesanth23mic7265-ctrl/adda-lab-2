@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Examora</title>
+    <style>
+        :root { --navy: #152b45; --blue: #2f6b92; --sky: #e8f2f5; --cream: #fbfaf5; --lime: #d5e971; --coral: #e7765e; --muted: #71808b; --line: #dbe3e5; }
+        * { box-sizing: border-box; }
+        body { min-height: 100vh; margin: 0; color: #24313d; background: var(--cream); font-family: Georgia, "Times New Roman", serif; }
+        a { color: inherit; text-decoration: none; }
+        .topbar { padding: 11px 24px; color: #fff; background: var(--navy); font: 700 0.7rem Arial, sans-serif; letter-spacing: 0.12em; text-align: center; text-transform: uppercase; }
+        header { display: flex; align-items: center; justify-content: space-between; max-width: 1240px; margin: 0 auto; padding: 22px 30px; }
+        .brand { display: flex; align-items: center; gap: 10px; color: var(--navy); font-size: 1.45rem; font-weight: 700; letter-spacing: -0.04em; }
+        .brand-mark { display: grid; width: 30px; height: 30px; place-items: center; color: var(--navy); background: var(--lime); font: 700 0.9rem Arial, sans-serif; }
+        .back-link { color: var(--blue); font: 700 0.75rem Arial, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; }
+        .login-layout { display: grid; grid-template-columns: 0.9fr 1.1fr; max-width: 980px; min-height: 560px; margin: 28px auto 70px; padding: 0 30px; }
+        .login-intro { display: flex; flex-direction: column; justify-content: center; padding: 55px; color: #fff; background: var(--navy); }
+        .eyebrow { margin: 0 0 16px; color: var(--lime); font: 700 0.72rem Arial, sans-serif; letter-spacing: 0.15em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(2.8rem, 5vw, 4.7rem); line-height: 0.94; letter-spacing: -0.07em; }
+        .login-intro p:not(.eyebrow) { max-width: 300px; margin: 25px 0 0; color: #d5e1e5; font: 0.95rem/1.7 Arial, sans-serif; }
+        .login-form-wrap { display: flex; align-items: center; padding: 55px; background: #fff; border: 1px solid var(--line); border-left: 0; }
+        form { width: 100%; }
+        h2 { margin: 0 0 8px; color: var(--navy); font-size: 1.8rem; }
+        .form-note { margin: 0 0 27px; color: var(--muted); font: 0.83rem/1.5 Arial, sans-serif; }
+        label { display: block; margin: 18px 0 7px; color: var(--navy); font: 700 0.75rem Arial, sans-serif; letter-spacing: 0.04em; }
+        input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); outline: 0; background: var(--cream); color: var(--navy); font: 0.9rem Arial, sans-serif; }
+        input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(47, 107, 146, 0.12); }
+        button { width: 100%; margin-top: 27px; padding: 15px; border: 0; color: var(--navy); background: var(--lime); cursor: pointer; font: 700 0.73rem Arial, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; }
+        button:hover { background: #c6dc53; }
+        .success, .error { margin: 0 0 15px; padding: 12px; font: 0.82rem/1.4 Arial, sans-serif; }
+        .success { color: #3d5b28; background: #edf5d6; }
+        .error { color: #8a382c; background: #fbe5df; }
+        footer { max-width: 980px; margin: 0 auto; padding: 0 30px 35px; color: var(--muted); font: 0.75rem Arial, sans-serif; }
+        @media (max-width: 700px) { header { padding: 20px; } .login-layout { grid-template-columns: 1fr; min-height: 0; margin-top: 8px; padding: 0 20px; } .login-intro { padding: 40px 28px; } .login-form-wrap { padding: 38px 28px; border-left: 1px solid var(--line); border-top: 0; } footer { padding: 0 20px 28px; } }
+    </style>
+</head>
+<body>
+    <div class="topbar">Your next milestone is closer than you think</div>
+    <header>
+        <a class="brand" href="/"><span class="brand-mark">E</span>Examora</a>
+        <a class="back-link" href="/">Back to home</a>
+    </header>
+    <main class="login-layout">
+        <section class="login-intro">
+            <p class="eyebrow">Welcome back</p>
+            <h1>Pick up where you left off.</h1>
+            <p>Your next practice session, progress update, and exam result are waiting for you.</p>
+        </section>
+        <section class="login-form-wrap" aria-labelledby="login-title">
+            <form action="/login" method="post">
+                <h2 id="login-title">Log in to Examora</h2>
+                <p class="form-note">Enter your details to access your examination dashboard.</p>
+                <p class="success" th:if="${message}" th:text="${message}"></p>
+                <p class="error" th:if="${error}" th:text="${error}"></p>
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" autocomplete="username" placeholder="Enter your username" required>
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required>
+                <button type="submit">Login</button>
+                <p class="form-note">New to Examora? <a href="/signup">Create an account</a></p>
+            </form>
+        </section>
+    </main>
+    <footer>Examora &copy; 2026 &middot; Learn at your pace. Measure your progress.</footer>
+</body>
+</html>
