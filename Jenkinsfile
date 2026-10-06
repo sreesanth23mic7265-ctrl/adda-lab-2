@@ -11,18 +11,18 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh './mvnw clean package -DskipTests'
+                bat 'mvnw.cmd clean package -DskipTests'
             }
         }
 
         stage('Deploy') {
             steps {
-                sh '''
-                    pkill -f "java -jar app.jar" || true
+                bat '''
+                    taskkill /F /IM java.exe 2>NUL || exit /B 0
 
-                    cp target/*.jar app.jar
+                    copy /Y target\\*.jar app.jar
 
-                    nohup java -jar app.jar > app.log 2>&1 &
+                    start /B java -jar app.jar > app.log 2>&1
                 '''
             }
         }
