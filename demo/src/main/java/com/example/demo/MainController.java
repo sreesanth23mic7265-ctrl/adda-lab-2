@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
+//new comment
 @Controller
 public class MainController {
     private final List<String[]> loginInformation = new ArrayList<>();
@@ -26,6 +28,13 @@ public class MainController {
         model.addAttribute("exams", exams.values());
         return "home";
     }
+    @PostMapping("path")
+    public String postMethodName(@RequestBody String entity) {
+        //TODO: process POST request
+        
+        return entity;
+    }
+    
 
     @GetMapping("/login")
     public String showLoginPage() {
