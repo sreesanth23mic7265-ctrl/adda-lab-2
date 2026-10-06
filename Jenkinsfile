@@ -18,7 +18,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat '''
-                    taskkill /F /IM java.exe 2>NUL || exit /B 0
+                    for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8081 ^| findstr LISTENING') do (
+                        taskkill /F /PID %%a
+                    )
 
                     copy /Y target\\*.jar app.jar
 
