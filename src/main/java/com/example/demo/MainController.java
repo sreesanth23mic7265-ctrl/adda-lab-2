@@ -6,20 +6,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
-//new comment
 @Controller
 public class MainController {
-    private final List<String[]> loginInformation = new ArrayList<>();
-    private final List<String[]> signupInformation = new ArrayList<>();
+    private final Map<String, User> users = new LinkedHashMap<>();
     private final Map<String, Exam> exams = createExams();
 
     @GetMapping("/")
@@ -28,10 +25,9 @@ public class MainController {
         model.addAttribute("exams", exams.values());
         return "home";
     }
-    @PostMapping("path")
+    @PostMapping("/path")
+    @ResponseBody
     public String postMethodName(@RequestBody String entity) {
-        //TODO: process POST request
-        
         return entity;
     }
     
@@ -46,14 +42,12 @@ public class MainController {
                                @RequestParam String password,
                                HttpSession session,
                                Model model) {
-        boolean registeredUser = signupInformation.stream()
-                .anyMatch(user -> user[2].equals(username) && user[3].equals(password));
-        if (!registeredUser) {
+        User registeredUser = users.get(username);
+        if (registeredUser == null || !registeredUser.password().equals(password)) {
             model.addAttribute("error", "Username or password is incorrect.");
             return "login";
         }
 
-        loginInformation.add(new String[]{username, password});
         session.setAttribute("username", username);
         return "redirect:/";
     }
@@ -75,7 +69,12 @@ public class MainController {
             return "signup";
         }
 
-        signupInformation.add(new String[]{name, email, username, password});
+        if (users.containsKey(username)) {
+            model.addAttribute("error", "Username is already taken. Please choose a different one.");
+            return "signup";
+        }
+
+        users.put(username, new User(name, email, username, password));
         model.addAttribute("message", "Account created for " + name + ". You can now log in.");
         return "signup";
     }
@@ -137,6 +136,9 @@ public class MainController {
                 new Question("A comparison looks for what between two ideas?", List.of("Similarities", "Dates", "Definitions", "Opposites only"), 0),
                 new Question("Which source is usually strongest for a research claim?", List.of("Anonymous comment", "Peer-reviewed study", "Advertisement", "Personal guess"), 1))));
         return catalog;
+    }
+
+    private record User(String name, String email, String username, String password) {
     }
 
     private record Exam(String id, String title, String code, String questionCount, String duration, List<Question> questions) {
