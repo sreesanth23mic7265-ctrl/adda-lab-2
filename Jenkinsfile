@@ -22,9 +22,7 @@ pipeline {
                         taskkill /F /PID %%a
                     )
 
-                    copy /Y target\\*.jar app.jar
-
-                    start /B java -jar app.jar > app.log 2>&1
+                    start "" /B java -jar target\\demo-0.0.1-SNAPSHOT.jar > app.log 2>&1
                 '''
             }
         }
