@@ -31,7 +31,7 @@ public class MainController {
         return entity;
     }
     
-
+//Additional methods for login, signup, exam handling, and logout
     @GetMapping("/login")
     public String showLoginPage() {
         return "login";
