@@ -25,6 +25,20 @@ public class MainController {
         model.addAttribute("exams", exams.values());
         return "home";
     }
+    @PostMapping("/")
+    public String postMethodName(@RequestParam String username,
+                                 @RequestParam String password,
+                                 HttpSession session,
+                                 Model model) {
+        User registeredUser = users.get(username);
+        if (registeredUser == null || !registeredUser.password().equals(password)) {
+            model.addAttribute("error", "Username or password is incorrect.");
+            return "home";
+        }
+
+        session.setAttribute("username", username);
+        return "redirect:/";
+    }
     @PostMapping("/path")
     @ResponseBody
     public String postMethodName(@RequestBody String entity) {
