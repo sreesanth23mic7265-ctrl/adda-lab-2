@@ -1,35 +1,16 @@
-
 pipeline {
     agent any
-
-    environment {
-        APP_PORT = '8081'
-        DEPLOY_DIR = 'C:\\SpringBootApp'
-    }
 
     stages {
 
         stage('Stop Application') {
             steps {
-                powershell '''
-                    $app = Join-Path $env:DEPLOY_DIR "app.jar"
-
-                    $processes = Get-CimInstance Win32_Process |
-                        Where-Object {
-                            ($_.Name -eq "java.exe" -or $_.Name -eq "javaw.exe") -and
-                            $_.CommandLine -and
-                            $_.CommandLine.Contains($app)
-                        }
-
-                    foreach ($process in $processes) {
-                        Write-Host "Stopping Spring Boot PID: $($process.ProcessId)"
-
-                        Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop
-                    }
-
-                    Start-Sleep -Seconds 2
-
-                    Write-Host "Stop Application stage completed."
+                bat '''
+                    for /f "tokens=5" %%a in ('netstat -ano ^| findstr :8081 ^| findstr LISTENING') do (
+                        echo Stopping process %%a on port 8081...
+                        taskkill /F /PID %%a
+                    )
+                    exit /B 0
                 '''
             }
         }
@@ -43,10 +24,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 bat '''
-                    if not exist "%DEPLOY_DIR%" mkdir "%DEPLOY_DIR%"
-
-                    copy /Y "target\\demo-0.0.1-SNAPSHOT.jar" "%DEPLOY_DIR%\\app.jar"
-
+                    if not exist "C:\\SpringBootApp" mkdir "C:\\SpringBootApp"
+                    copy /Y "target\\demo-0.0.1-SNAPSHOT.jar" "C:\\SpringBootApp\\app.jar"
                     if errorlevel 1 exit /b 1
                 '''
             }
@@ -54,52 +33,21 @@ pipeline {
 
         stage('Start Application') {
             steps {
-                withEnv(['JENKINS_NODE_COOKIE=dontKillMe']) {
+                bat '''
+                    schtasks /run /tn "SpringBootApp"
 
-                    powershell '''
-                        $app = Join-Path $env:DEPLOY_DIR "app.jar"
-                        $log = Join-Path $env:DEPLOY_DIR "app.log"
-                        $err = Join-Path $env:DEPLOY_DIR "error.log"
+                    echo Waiting for Spring Boot to start...
+                    ping -n 16 127.0.0.1 > nul
 
-                        Write-Host "Starting Spring Boot application..."
-
-                        $process = Start-Process -FilePath "java.exe" `
-                            -ArgumentList @("-jar", $app, "--server.port=8081") `
-                            -WorkingDirectory $env:DEPLOY_DIR `
-                            -RedirectStandardOutput $log `
-                            -RedirectStandardError $err `
-                            -PassThru
-
-                        Write-Host "Started process PID: $($process.Id)"
-
-                        Start-Sleep -Seconds 8
-
-                        $connection = Get-NetTCPConnection -LocalPort 8081 -State Listen -ErrorAction SilentlyContinue |
-                            Where-Object { $_.OwningProcess -eq $process.Id }
-
-                        if (-not $connection) {
-                            Write-Host "Application failed to start!"
-
-                            Get-Content $log -Tail 50 -ErrorAction SilentlyContinue
-                            Get-Content $err -Tail 50 -ErrorAction SilentlyContinue
-
-                            throw "Spring Boot deployment failed."
-                        }
-
-                        Write-Host "Spring Boot application running on port 8081!"
-                    '''
-                }
+                    netstat -ano | findstr :8081 | findstr LISTENING
+                    if errorlevel 1 (
+                        echo ERROR: Application failed to start!
+                        type C:\\SpringBootApp\\app.log
+                        exit /b 1
+                    )
+                    echo Spring Boot started successfully!
+                '''
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'BUILD AND DEPLOYMENT SUCCESSFUL!'
-        }
-
-        failure {
-            echo 'PIPELINE FAILED! Check console output.'
         }
     }
 }
