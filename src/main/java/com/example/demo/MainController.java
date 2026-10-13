@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class MainController {
     private final Map<String, User> users = new LinkedHashMap<>();
     private final Map<String, Exam> exams = createExams();
-//new commit
+//new commit new
     @GetMapping("/")
     public String getMethodName(Model model, HttpSession session) {
         model.addAttribute("username", session.getAttribute("username"));
